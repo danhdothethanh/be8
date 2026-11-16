@@ -17,8 +17,7 @@ namespace MaSV_MyStore.Models
 
         public decimal UnitPrice { get; set; }
 
-        // Computed column in DB: TotalPrice AS (Quantity * UnitPrice) PERSISTED
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        
         public decimal TotalPrice { get; set; }
 
         [ForeignKey("OrderID")]
