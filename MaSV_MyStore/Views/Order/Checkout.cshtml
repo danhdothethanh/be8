@@ -1,0 +1,132 @@
+@model MaSV_MyStore.Models.ViewModel.CheckoutVM
+@{
+    ViewBag.Title = "Thanh toán";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    var cart = ViewBag.Cart as MaSV_MyStore.Models.ViewModel.Cart;
+}
+
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4"><i class="fas fa-credit-card"></i> Thanh toán đơn hàng</h2>
+
+    @using (Html.BeginForm("Checkout", "Order", FormMethod.Post, new { id = "checkoutForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Thông tin người nhận -->
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light"><strong><i class="fas fa-user"></i> Thông tin người nhận</strong></div>
+                    <div class="card-body">
+                        <p class="mb-1"><strong>@Model.FullName</strong> | @Model.Phone</p>
+                        <p class="text-muted small mb-0">@Model.Email</p>
+                    </div>
+                </div>
+
+                <!-- Địa chỉ giao hàng -->
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <strong><i class="fas fa-map-marker-alt"></i> Giao tới</strong>
+                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="enableAddressEdit()">Chỉnh sửa</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="addressDisplay">
+                            @Html.TextAreaFor(m => m.ShippingAddress, new { @class = "form-control", rows = 2, @readonly = "readonly", id = "shippingAddress" })
+                        </div>
+                        <div id="addressEdit" style="display:none;" class="mt-2">
+                            <input type="text" id="newShippingAddress" class="form-control" placeholder="Nhập địa chỉ giao hàng mới..." />
+                        </div>
+                        @Html.ValidationMessageFor(m => m.ShippingAddress, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <!-- Hình thức giao hàng -->
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light"><strong><i class="fas fa-truck"></i> Hình thức giao hàng</strong></div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="DeliveryMethod" value="Standard" id="std" checked />
+                            <label class="form-check-label" for="std">
+                                Giao hàng tiêu chuẩn (2-3 ngày) - Miễn phí
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="DeliveryMethod" value="Express" id="exp" />
+                            <label class="form-check-label" for="exp">
+                                Giao hàng nhanh (trong ngày) - 30.000₫
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hình thức thanh toán -->
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-light"><strong><i class="fas fa-money-bill"></i> Hình thức thanh toán</strong></div>
+                    <div class="card-body">
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" value="COD" id="cod" checked />
+                            <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" value="BankTransfer" id="bank" />
+                            <label class="form-check-label" for="bank">Chuyển khoản ngân hàng</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="PaymentMethod" value="PayPal" id="paypal" />
+                            <label class="form-check-label" for="paypal">PayPal (tùy chọn)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="col-md-4">
+                <div class="card shadow sticky-top" style="top:80px;">
+                    <div class="card-header bg-primary text-white"><strong>Đơn hàng của bạn</strong></div>
+                    <div class="card-body">
+                        @if (cart != null && cart.Items.Any())
+                        {
+                            <ul class="list-group list-group-flush mb-3">
+                                @foreach (var item in cart.Items)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between px-0">
+                                        <span>@item.ProductName x @item.Quantity</span>
+                                        <span>@item.TotalPrice.ToString("N0")₫</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        <hr />
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Tổng cộng:</strong>
+                            <strong class="text-danger fs-5">@Model.TotalAmount.ToString("N0") ₫</strong>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg w-100" onclick="return updateShippingAddress()">
+                            <i class="fas fa-check"></i> Đặt hàng
+                        </button>
+                        <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-secondary w-100 mt-2">Quay lại giỏ hàng</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+<script>
+    function enableAddressEdit() {
+        document.getElementById('shippingAddress').removeAttribute('readonly');
+        document.getElementById('addressEdit').style.display = 'block';
+        document.getElementById('newShippingAddress').focus();
+    }
+
+    function updateShippingAddress() {
+        var newAddr = document.getElementById('newShippingAddress').value.trim();
+        if (newAddr) {
+            document.getElementById('shippingAddress').value = newAddr;
+        }
+        return true;
+    }
+</script>
+}

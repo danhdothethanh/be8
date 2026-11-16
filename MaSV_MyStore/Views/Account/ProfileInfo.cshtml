@@ -1,0 +1,108 @@
+@model MaSV_MyStore.Models.ViewModel.RegisterVM
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+            }
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4>Thông tin cá nhân</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Tên đăng nhập:</th>
+                            <td>@Model.Username</td>
+                        </tr>
+                        <tr>
+                            <th>Họ và tên:</th>
+                            <td>@Model.FullName</td>
+                        </tr>
+                        <tr>
+                            <th>Số điện thoại:</th>
+                            <td>@(Model.Phone ?? "Chưa cập nhật")</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>@Model.Email</td>
+                        </tr>
+                        <tr>
+                            <th>Địa chỉ:</th>
+                            <td>@(Model.Address ?? "Chưa cập nhật")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cập nhật thông tin -->
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4>Cập nhật thông tin</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("UpdateProfile", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Username)
+
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.FullName)
+                            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Phone)
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Email)
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group mb-3">
+                            @Html.LabelFor(m => m.Address)
+                            @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = 2 })
+                        </div>
+                        <button type="submit" class="btn btn-info">Cập nhật</button>
+                    }
+                </div>
+            </div>
+
+            <!-- Đổi mật khẩu -->
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <h4>Đổi mật khẩu</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("ChangePassword", "Account", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="form-group mb-3">
+                            <label>Mật khẩu hiện tại</label>
+                            <input type="password" name="currentPassword" class="form-control" required />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Mật khẩu mới</label>
+                            <input type="password" name="newPassword" class="form-control" required minlength="6" />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label>Xác nhận mật khẩu mới</label>
+                            <input type="password" name="confirmNewPassword" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

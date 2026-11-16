@@ -1,0 +1,36 @@
+@{
+    var categories = new List<MaSV_MyStore.Models.Category>();
+    try
+    {
+        using (var db = new MaSV_MyStore.Models.MyStoreEntities())
+        {
+            categories = db.Categories.ToList();
+        }
+    }
+    catch { }
+}
+
+<ul class="navbar-nav me-auto">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="fas fa-list"></i> Danh mục
+        </a>
+        <ul class="dropdown-menu">
+            @if (categories.Any())
+            {
+                foreach (var cat in categories)
+                {
+                    <li>
+                        <a class="dropdown-item" href="@Url.Action("ProductList", "Home", new { id = cat.CategoryID })">
+                            @cat.CategoryName
+                        </a>
+                    </li>
+                }
+            }
+            else
+            {
+                <li><a class="dropdown-item" href="#">Chưa có danh mục</a></li>
+            }
+        </ul>
+    </li>
+</ul>

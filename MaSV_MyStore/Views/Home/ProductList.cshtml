@@ -1,0 +1,29 @@
+@model PagedList.IPagedList<MaSV_MyStore.Models.Product>
+@using PagedList.Mvc
+@{
+    ViewBag.Title = ViewBag.CategoryName ?? "Danh sách sản phẩm";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container mt-4 mb-5">
+    <h2 class="mb-4">@ViewBag.CategoryName</h2>
+    <div class="row">
+        @foreach (var p in Model)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "https://via.placeholder.com/300x200" : p.ImageUrl)" 
+                         class="card-img-top" style="height:200px;object-fit:cover;" />
+                    <div class="card-body">
+                        <h5>@p.ProductName</h5>
+                        <p class="text-danger fw-bold">@p.Price.ToString("N0") ₫</p>
+                        <a href="@Url.Action("ProductDetail", "Home", new { id = p.ProductID })" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="text-center">
+        @Html.PagedListPager(Model, page => Url.Action("ProductList", new { id = ViewBag.CategoryID, page }))
+    </div>
+</div>

@@ -1,0 +1,54 @@
+@model MaSV_MyStore.Models.ViewModel.ProductDetailVM
+@{
+    ViewBag.Title = Model.Product.ProductName;
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-md-5">
+            <img src="@(string.IsNullOrEmpty(Model.Product.ImageUrl) ? "https://via.placeholder.com/500x400?text=No+Image" : Model.Product.ImageUrl)" 
+                 class="img-fluid rounded shadow" alt="@Model.Product.ProductName" />
+        </div>
+        <div class="col-md-7">
+            <h2>@Model.Product.ProductName</h2>
+            <p class="text-muted">Đã bán: @(Model.Product.SoldQuantity ?? 0)</p>
+            <h3 class="text-danger">@Model.Product.Price.ToString("N0") ₫</h3>
+            <p>@Model.Product.Description</p>
+            
+            <div class="mt-4">
+                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.Product.ProductID" />
+                    <div class="input-group mb-3" style="max-width:200px;">
+                        <span class="input-group-text">Số lượng</span>
+                        <input type="number" name="quantity" value="1" min="1" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Related -->
+    @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
+    {
+        <h4 class="mt-5 mb-3">Sản phẩm tương tự</h4>
+        <div class="row">
+            @foreach (var p in Model.RelatedProducts)
+            {
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card h-100">
+                        <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "https://via.placeholder.com/200" : p.ImageUrl)" class="card-img-top" style="height:150px;object-fit:cover;" />
+                        <div class="card-body">
+                            <h6>@p.ProductName</h6>
+                            <p class="text-danger">@p.Price.ToString("N0") ₫</p>
+                            <a href="@Url.Action("ProductDetail", new { id = p.ProductID })" class="btn btn-sm btn-outline-primary">Xem</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

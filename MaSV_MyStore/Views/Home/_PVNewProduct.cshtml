@@ -1,0 +1,37 @@
+@model MaSV_MyStore.Models.ViewModel.HomeProductVM
+@using PagedList.Mvc
+
+<h3 class="mb-3"><i class="fas fa-box"></i> Danh sách sản phẩm</h3>
+<div class="row">
+    @if (Model.NewProducts != null && Model.NewProducts.Any())
+    {
+        foreach (var p in Model.NewProducts)
+        {
+            <div class="col-md-4 col-sm-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "https://via.placeholder.com/300x200?text=No+Image" : p.ImageUrl)" 
+                         class="card-img-top" alt="@p.ProductName" style="height:200px;object-fit:cover;" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@p.ProductName</h5>
+                        <p class="card-text text-muted small">@(p.Description != null && p.Description.Length > 80 ? p.Description.Substring(0, 80) + "..." : p.Description)</p>
+                        <p class="text-danger fw-bold mt-auto">@p.Price.ToString("N0") ₫</p>
+                        <a href="@Url.Action("ProductDetail", "Home", new { id = p.ProductID })" class="btn btn-primary btn-sm">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-12">
+            <div class="alert alert-info">Không tìm thấy sản phẩm nào.</div>
+        </div>
+    }
+</div>
+
+@if (Model.NewProducts != null && Model.NewProducts.PageCount > 1)
+{
+    <div class="text-center">
+        @Html.PagedListPager(Model.NewProducts, page => Url.Action("Index", new { page, searchTerm = Model.SearchTerm }))
+    </div>
+}

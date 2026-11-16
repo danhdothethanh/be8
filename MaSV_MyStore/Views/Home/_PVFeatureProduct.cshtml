@@ -1,0 +1,22 @@
+@model MaSV_MyStore.Models.ViewModel.HomeProductVM
+
+@if (Model.FeaturedProducts != null && Model.FeaturedProducts.Any())
+{
+    <h3 class="mb-3"><i class="fas fa-fire text-danger"></i> Sản phẩm nổi bật</h3>
+    <div class="row mb-5">
+        @foreach (var p in Model.FeaturedProducts.Take(4))
+        {
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <img src="@(string.IsNullOrEmpty(p.ImageUrl) ? "https://via.placeholder.com/300x200?text=No+Image" : p.ImageUrl)" 
+                         class="card-img-top" alt="@p.ProductName" style="height:180px;object-fit:cover;" />
+                    <div class="card-body">
+                        <h6 class="card-title">@p.ProductName</h6>
+                        <p class="text-danger fw-bold">@p.Price.ToString("N0") ₫</p>
+                        <a href="@Url.Action("ProductDetail", "Home", new { id = p.ProductID })" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

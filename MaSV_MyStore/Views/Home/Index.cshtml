@@ -1,0 +1,33 @@
+@model MaSV_MyStore.Models.ViewModel.HomeProductVM
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<!-- Banner -->
+<div class="bg-primary text-white text-center py-5 mb-4">
+    <div class="container">
+        <h1 class="display-4">Chào mừng đến MyStore</h1>
+        <p class="lead">Mua sắm dễ dàng, giá tốt mỗi ngày</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Tìm kiếm -->
+    <div class="row mb-4">
+        <div class="col-md-8 offset-md-2">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { @class = "input-group" }))
+            {
+                <input type="text" name="searchTerm" class="form-control form-control-lg" 
+                       placeholder="Tìm kiếm sản phẩm..." value="@Model.SearchTerm" />
+                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Tìm</button>
+            }
+        </div>
+    </div>
+
+    <!-- Sản phẩm nổi bật -->
+    @Html.Partial("_PVFeatureProduct", Model)
+
+    <!-- Sản phẩm mới / danh sách -->
+    @Html.Partial("_PVNewProduct", Model)
+</div>
